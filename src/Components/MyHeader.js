@@ -9,5 +9,4 @@ const MyHeader = ({ headText, leftChild, rightChild }) => {
     </header>
   );
 };
-
 export default MyHeader;
