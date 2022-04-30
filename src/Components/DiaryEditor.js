@@ -1,71 +1,72 @@
 /** @format */
 
-import React, { useState, useRef, useContext } from 'react';
+import React, {
+  useState,
+  useRef,
+  useContext,
+  useEffect,
+  useCallback,
+} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DiaryDispatchContext } from '../App';
 
 import EmotionItem from './EmotionItem';
 import MyButton from './MyButton';
 import MyHeader from './MyHeader';
+import { getStringDate } from '../util/date';
+import { emotionList } from '../util/emotionList';
 
-const emotionList = [
-  {
-    emotion_id: 1,
-    emotion_img: '/assets/emotion1.png',
-    emotion_descript: 'すごく嬉しい',
-  },
-  {
-    emotion_id: 2,
-    emotion_img: '/assets/emotion2.png',
-    emotion_descript: '嬉しい',
-  },
-  {
-    emotion_id: 3,
-    emotion_img: '/assets/emotion3.png',
-    emotion_descript: '普通',
-  },
-  {
-    emotion_id: 4,
-    emotion_img: '/assets/emotion4.png',
-    emotion_descript: '悲しい',
-  },
-  {
-    emotion_id: 5,
-    emotion_img: '/assets/emotion5.png',
-    emotion_descript: 'すごく悲しい',
-  },
-];
-
-const getStringDate = (date) => {
-  return date.toISOString().slice(0, 10);
-};
-
-const DiaryEditor = () => {
+const DiaryEditor = ({ isEdit, originData }) => {
   const [date, setDate] = useState(getStringDate(new Date()));
   const [emotion, setEmotion] = useState(3);
   const [content, setContent] = useState('');
   const contentRef = useRef();
 
   const navigate = useNavigate();
-  const { onCreate } = useContext(DiaryDispatchContext);
+  const { onCreate, onEdit, onRemove } = useContext(DiaryDispatchContext);
 
-  const handleClickEmotion = (emotion) => {
+  const handleClickEmotion = useCallback((emotion) => {
     setEmotion(emotion);
-  };
+  }, []);
 
   const handleSubmit = () => {
     if (content.length < 1) {
       contentRef.current.focus();
       return;
     }
-    onCreate(date, content, emotion);
+
+    if (
+      window.confirm(isEdit ? '日記をやり直しますか' : '新しい日記を書きますか')
+    ) {
+      if (!isEdit) {
+        onCreate(date, content, emotion);
+      } else {
+        onEdit(originData.id, date, content, emotion);
+      }
+    }
+
     navigate('/', { replace: true });
   };
+
+  const handleRemove = () => {
+    if (window.confirm('本当に削除しますか')) {
+      onRemove(originData.id);
+      navigate('/', { replace: true });
+    }
+  };
+
+  useEffect(() => {
+    if (isEdit) {
+      setDate(getStringDate(new Date(parseInt(originData.date))));
+      setEmotion(originData.emotion);
+      setContent(originData.content);
+    }
+  }, [isEdit, originData]);
 
   return (
     <div className='DiaryEditor'>
       <MyHeader
-        headText={'日記作成'}
+        headText={isEdit ? '日記修正' : '日記作成'}
         leftChild={
           <MyButton
             text={'<'}
@@ -73,6 +74,11 @@ const DiaryEditor = () => {
               navigate(-1);
             }}
           />
+        }
+        rightChild={
+          isEdit && (
+            <MyButton text={'削除'} type={'negative'} onClick={handleRemove} />
+          )
         }
       />
       <div>

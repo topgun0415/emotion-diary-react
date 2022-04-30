@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import DiaryItem from './DiaryItem';
 
 const sortOptionList = [
-  { value: 'lastest', name: '最新' },
+  { value: 'latest', name: '最新' },
   { value: 'oldest', name: '古い順' },
 ];
 
@@ -16,7 +16,7 @@ const filterOptionList = [
   { value: 'sad', name: '悲しい' },
 ];
 
-const ControlMenu = ({ value, onChange, optionList }) => {
+const ControlMenu = React.memo(({ value, onChange, optionList }) => {
   return (
     <select
       className='ControlMenu'
@@ -29,11 +29,11 @@ const ControlMenu = ({ value, onChange, optionList }) => {
       ))}
     </select>
   );
-};
+});
 
 const DiaryList = ({ diaryList }) => {
   const navigate = useNavigate();
-  const [sortType, setSortType] = useState('lastest');
+  const [sortType, setSortType] = useState('latest');
   const [filter, setFilter] = useState('all');
 
   const getProcessedDiaryList = () => {
@@ -45,7 +45,7 @@ const DiaryList = ({ diaryList }) => {
       }
     };
     const compare = (a, b) => {
-      if (sortType === 'lastest') {
+      if (sortType === 'latest') {
         return parseInt(b.date) - parseInt(a.date);
       } else {
         return parseInt(a.date) - parseInt(b.date);

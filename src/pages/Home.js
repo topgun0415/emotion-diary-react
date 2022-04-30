@@ -14,6 +14,11 @@ const Home = () => {
   const headText = `${curDate.getFullYear()}年 ${curDate.getMonth() + 1}月`;
 
   useEffect(() => {
+    const titleElement = document.getElementsByTagName('title')[0];
+    titleElement.innerHTML = `今日の日記`;
+  }, []);
+
+  useEffect(() => {
     if (diaryList.length >= 1) {
       const firstDay = new Date(
         curDate.getFullYear(),
@@ -24,7 +29,10 @@ const Home = () => {
       const lastDay = new Date(
         curDate.getFullYear(),
         curDate.getMonth() + 1,
-        0
+        0,
+        23,
+        59,
+        59
       ).getTime();
 
       setData(diaryList.filter((v) => firstDay <= v.date && v.date <= lastDay));

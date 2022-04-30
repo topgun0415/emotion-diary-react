@@ -17,6 +17,11 @@ const Diary = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const titleElement = document.getElementsByTagName('title')[0];
+    titleElement.innerHTML = `日記 - ${id}番め`;
+  }, []);
+
+  useEffect(() => {
     if (diaryList.length >= 1) {
       const targetDiary = diaryList.find(
         (v) => parseInt(v.id) === parseInt(id)
